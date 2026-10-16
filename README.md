@@ -17,11 +17,21 @@ Your progress is saved in your own browser on the device you use. Clearing your 
 
 ## Files
 
-- `index.html`: the whole checklist in one file. No build step and no other files are needed.
+| File | What it does |
+| --- | --- |
+| `index.html` | The page structure. |
+| `style.css` | All colors, fonts and layout. Colors and fonts are variables at the top of the page styles. |
+| `app.js` | The checklist behavior: ticking, progress, search, filters and saving. |
+| `data.js` | The list of entries, one per line. This is the file you edit when the show gets new content. |
+| `logo.png` | The logo shown beside the page title. |
+| `favicon.png` | The small icon in the browser tab. |
+| `apple-touch-icon.png` | The icon used when the page is added to a phone's home screen. |
+
+Keep all of these files together in the same folder. The page needs every one of them.
 
 ## Publish it with GitHub Pages
 
-1. Make sure this repository is **Public** and that `index.html` sits at the top level, not inside a folder.
+1. Make sure this repository is **Public** and that the files above sit at the top level, not inside a folder.
 2. Go to the repository's **Settings** tab and open **Pages** in the left sidebar.
 3. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
 4. Set **Branch** to **main** and the folder to **/(root)**, then click **Save**.
@@ -29,6 +39,25 @@ Your progress is saved in your own browser on the device you use. Clearing your 
 
 If you see a 404 page, wait a few more minutes, then check that the file is named exactly `index.html`.
 
-## Update the checklist
+## Add new episodes or movies
 
-To change the page, replace `index.html` in the repository: open the file, choose the upload option under **Add file**, upload the new version with the same name, and commit. The site refreshes after a minute or two.
+1. Open `data.js` in the repository and tap the pencil icon to edit.
+2. Add a new line at the **end** of the list, before the closing `];`. Adding at the end keeps everyone's saved progress in the right place.
+3. Make sure every line ends with a comma except the last one. A missing or extra comma breaks the page.
+4. Commit the change. The site updates after a minute or two.
+
+Examples of a line:
+
+```
+{"k":"movie","title":"New Movie Title","meta":"Movie 30"}
+{"k":"ep","title":"Episodes 1235–1260","meta":"26 episodes","a":1235,"b":1260}
+{"k":"ep","title":"Episodes 1261–current","meta":"Ongoing","a":1261,"b":null}
+```
+
+The `k` value is the type: `ep`, `movie`, `ova`, `kaito`, `drama` or `other`.
+
+When the "current" block ends, change it to a fixed range, then add the new movie and a fresh "current" block after it.
+
+## Change the look
+
+Open `style.css` and edit the values at the top of the page styles to change colors and fonts. To replace the logo or icons, upload new images with the same file names.
