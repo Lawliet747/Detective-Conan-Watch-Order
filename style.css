@@ -174,3 +174,54 @@ h1{font:800 clamp(30px,8.5vw,46px)/1.02 var(--f-display);letter-spacing:-.02em;m
 .pageof input::-webkit-outer-spin-button,.pageof input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .pageof b{color:var(--ink);font-weight:600}
 .pager button:focus-visible,.pageof input:focus-visible,.perpage select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* Responsive Detective Conan background
+   Keep the artwork subtle behind the app UI and switch crops by viewport. */
+body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--bg) 88%, transparent),
+      color-mix(in srgb, var(--bg) 94%, transparent)
+    ),
+    url("assets/background-mobile.jpg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/*Background size for tablet*/
+@media (min-width: 600px) {
+  body {
+    background-image:
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--bg) 88%, transparent),
+        color-mix(in srgb, var(--bg) 94%, transparent)
+      ),
+      url("assets/background-tablet.jpg");
+  }
+}
+
+/*Background size for desktop*/
+@media (min-width: 1024px) {
+  body {
+    background-image:
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--bg) 88%, transparent),
+        color-mix(in srgb, var(--bg) 94%, transparent)
+      ),
+      url("assets/background-desktop.jpg");
+    background-position: center center;
+  }
+}
+
+/* Keep sticky controls readable over the background image. */
+.bar {
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
