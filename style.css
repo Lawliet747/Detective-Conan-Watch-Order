@@ -149,3 +149,28 @@ h1{font:800 clamp(30px,8.5vw,46px)/1.02 var(--f-display);letter-spacing:-.02em;m
 @media (prefers-reduced-motion:reduce){
   .fill,.main input::after{transition:none}
 }
+
+/* Pagination */
+.listhead{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;
+  margin:0 0 10px;scroll-margin-top:104px;
+}
+.perpage{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.perpage select{
+  padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer;
+}
+.range{font:500 13px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.pager{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;margin-top:16px}
+.pager button{
+  min-width:44px;height:44px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  font-size:20px;line-height:1;cursor:pointer;
+}
+.pager button:disabled{opacity:.4;cursor:default}
+.pageof{display:flex;align-items:center;gap:8px;padding:0 6px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pageof input{
+  width:56px;height:44px;text-align:center;border:1px solid var(--line);border-radius:8px;background:var(--surface);
+  color:var(--ink);-moz-appearance:textfield;appearance:textfield;
+}
+.pageof input::-webkit-outer-spin-button,.pageof input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.pageof b{color:var(--ink);font-weight:600}
+.pager button:focus-visible,.pageof input:focus-visible,.perpage select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}

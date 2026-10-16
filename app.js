@@ -7,6 +7,11 @@
   var TYPES = [['all','All'],['ep','Episodes'],['movie','Movies'],['ova','OVAs'],['kaito','Magic Kaito'],['drama','Drama'],['other','Specials']];
   var LABEL = {ep:'Episodes',movie:'Movie',ova:'OVA',kaito:'Magic Kaito',drama:'Drama',other:'Special'};
 
+  // Entries per page. 0 means show everything. To offer more choices, add numbers here, for example [10, 25, 50, 0].
+  // The first number is the default.
+  var PAGE_SIZES = [10, 0];
+  var PS_KEY = 'conan-watch-order-pagesize';
+
   var EP_TOTAL = 0;
   DATA.forEach(function(e){ if(e.k==='ep' && e.b!=null) EP_TOTAL += e.b - e.a + 1; });
 
@@ -14,6 +19,7 @@
   var list=$('list'), empty=$('empty'), toastEl=$('toast'), toastMsg=$('toastmsg'), undoBtn=$('undo');
   var done=new Set(), filter='all', q='', hideDone=false;
   var rows=new Map(), chipEls={};
+  var page=0, pages=1, pageSize=PAGE_SIZES[0], vis=[];
   var dbDoc=null, dirty=false, ver=0, wTimer=null, writing=Promise.resolve(), undoFn=null, toastTimer=null;
 
   function pad(n){ return String(n).padStart(3,'0'); }
@@ -94,17 +100,84 @@
     });
   }
 
+  function visibleIndexes(){
+    var out=[];
+    DATA.forEach(function(e,i){ if(matches(e,i)) out.push(i); });
+    return out;
+  }
+
+  function pageOf(pos){ return pageSize ? Math.floor(pos/pageSize) : 0; }
+
   function renderList(){
+    vis=visibleIndexes();
+    var total=vis.length;
+    pages = pageSize ? Math.max(1, Math.ceil(total/pageSize)) : 1;
+    if(page>pages-1) page=pages-1;
+    if(page<0) page=0;
+    var start = pageSize ? page*pageSize : 0;
+    var end = pageSize ? Math.min(total, start+pageSize) : total;
     list.textContent=''; rows.clear();
-    var frag=document.createDocumentFragment(), shown=0;
-    DATA.forEach(function(e,i){
-      if(!matches(e,i)) return;
-      var li=buildRow(e,i); rows.set(i,li); frag.append(li); shown++;
-    });
+    var frag=document.createDocumentFragment();
+    for(var k=start;k<end;k++){
+      var i=vis[k], li=buildRow(DATA[i],i); rows.set(i,li); frag.append(li);
+    }
     list.append(frag);
-    empty.hidden = shown>0;
+    empty.hidden = total>0;
+    renderPager(total,start,end);
     rowStates();
   }
+
+  var pagerEl=$('pager'), pgnum=$('pgnum');
+  function renderPager(total,start,end){
+    $('range').textContent = total ? 'Showing '+(start+1)+'–'+end+' of '+total : '';
+    var show = total>0 && pages>1;
+    pagerEl.hidden = !show;
+    if(!show) return;
+    pgnum.value=page+1; pgnum.max=pages;
+    $('pgtotal').textContent=pages;
+    $('pfirst').disabled = page===0;
+    $('pprev').disabled = page===0;
+    $('pnext').disabled = page===pages-1;
+    $('plast').disabled = page===pages-1;
+  }
+
+  function scrollToListTop(){
+    var calm=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    $('listhead').scrollIntoView({behavior:calm?'auto':'smooth',block:'start'});
+  }
+  function goPage(p){
+    p=Math.max(0,Math.min(pages-1,p));
+    if(p!==page){ page=p; renderList(); }
+    pgnum.value=page+1;
+    scrollToListTop();
+  }
+  $('pfirst').addEventListener('click',function(){ goPage(0); });
+  $('pprev').addEventListener('click',function(){ goPage(page-1); });
+  $('pnext').addEventListener('click',function(){ goPage(page+1); });
+  $('plast').addEventListener('click',function(){ goPage(pages-1); });
+  pgnum.addEventListener('change',function(){
+    var v=parseInt(pgnum.value,10);
+    if(isNaN(v)){ pgnum.value=page+1; return; }
+    goPage(v-1);
+  });
+
+  // page size choice, remembered on this device
+  var sizeSel=$('pagesize');
+  PAGE_SIZES.forEach(function(n){
+    var o=document.createElement('option'); o.value=n; o.textContent = n ? String(n) : 'All'; sizeSel.append(o);
+  });
+  try{
+    var savedSize=parseInt(localStorage.getItem(PS_KEY),10);
+    if(PAGE_SIZES.indexOf(savedSize)!==-1) pageSize=savedSize;
+  }catch(e){}
+  sizeSel.value=pageSize;
+  sizeSel.addEventListener('change',function(){
+    var firstPos = pageSize ? page*pageSize : 0;
+    pageSize=parseInt(sizeSel.value,10);
+    page=pageOf(firstPos);
+    try{ localStorage.setItem(PS_KEY, String(pageSize)); }catch(e){}
+    renderList();
+  });
 
   function updateAll(){
     var d=done.size, pct=N?Math.round(d/N*100):0, ew=0;
@@ -186,22 +259,25 @@
   });
   chips.addEventListener('click',function(ev){
     var b=ev.target.closest('.chip'); if(!b) return;
-    filter=b.dataset.k; syncChips(); renderList();
+    filter=b.dataset.k; page=0; syncChips(); renderList();
   });
   function syncChips(){
     chips.querySelectorAll('.chip').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.k===filter?'true':'false'); });
   }
 
-  $('search').addEventListener('input',function(ev){ q=ev.target.value.trim().toLowerCase(); renderList(); });
-  $('hidedone').addEventListener('change',function(ev){ hideDone=ev.target.checked; renderList(); });
+  $('search').addEventListener('input',function(ev){ q=ev.target.value.trim().toLowerCase(); page=0; renderList(); });
+  $('hidedone').addEventListener('change',function(ev){ hideDone=ev.target.checked; page=0; renderList(); });
   function clearFilters(){
-    filter='all'; q=''; hideDone=false; $('search').value=''; $('hidedone').checked=false; syncChips();
+    filter='all'; q=''; hideDone=false; page=0; $('search').value=''; $('hidedone').checked=false; syncChips();
   }
   $('clearfilters').addEventListener('click',function(){ clearFilters(); renderList(); });
 
   $('nextbtn').addEventListener('click',function(){
     var n=nextIndex(); if(n<0) return;
-    if(!rows.has(n)){ clearFilters(); renderList(); }
+    var pos=vis.indexOf(n);
+    if(pos<0){ clearFilters(); pos=n; }
+    page=pageOf(pos);
+    renderList();
     var el=rows.get(n); if(!el) return;
     var calm=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     el.scrollIntoView({behavior:calm?'auto':'smooth',block:'center'});
@@ -222,7 +298,9 @@
 
   // boot
   $('eyebrow').textContent='Checklist · '+N+' entries · '+EP_TOTAL.toLocaleString()+'+ episodes';
-  loadLocal(); renderList(); updateAll(); setSync('device');
+  // open on the page that holds the next unwatched entry
+  function jumpToNext(){ var n=nextIndex(); page = n>0 ? pageOf(n) : 0; }
+  loadLocal(); jumpToNext(); renderList(); updateAll(); setSync('device');
 
   // optional account sync (private per viewer)
   (function(){
@@ -232,16 +310,21 @@
       return user.id().then(function(uid){
         if(!uid) return null;
         dbDoc=db.doc('data/users/'+uid+'/watch-progress');
-        var seeded=false;
+        var seeded=false, firstSnap=true;
         dbDoc.onSnapshot(function(snap){
           if(snap.exists){
             var d=snap.data()||{}, arr=Array.isArray(d.done)?d.done:[];
             var inc=new Set(arr.filter(function(n){ return Number.isInteger(n)&&n>=0&&n<N; }));
             var same=inc.size===done.size && Array.from(inc).every(function(n){ return done.has(n); });
-            if(!dirty && !same){ done=inc; saveLocal(); renderList(); updateAll(); }
+            if(!dirty && !same){
+              done=inc; saveLocal();
+              if(firstSnap && filter==='all' && !q && !hideDone) jumpToNext();
+              renderList(); updateAll();
+            }
           }else if(done.size && !dirty && !seeded){
             seeded=true; persist();
           }
+          firstSnap=false;
           setSync('synced');
         }, function(){ setSync('device'); });
       });

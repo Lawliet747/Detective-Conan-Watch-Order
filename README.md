@@ -12,6 +12,9 @@ An interactive checklist for the full Detective Conan watch order: 184 entries c
 6. Type in the search box to find a title, or type an episode number to find the block that contains it.
 7. Tap the **⋯** button on any entry to mark everything up to that point as watched, or to clear everything from that point on.
 8. Tick **Hide watched entries** to see only what is left.
+9. The list shows 10 entries per page. Use the arrow buttons under the list to move between pages, or type a page number. The **Per page** menu above the list lets you switch to showing all entries at once.
+
+When you open the site, it jumps to the page that holds the next entry you haven't watched.
 
 Your progress is saved in your own browser on the device you use. Clearing your browser data will also clear your progress.
 
@@ -21,7 +24,7 @@ Your progress is saved in your own browser on the device you use. Clearing your 
 | --- | --- |
 | `index.html` | The page structure. |
 | `style.css` | All colors, fonts and layout. Colors and fonts are variables at the top of the page styles. |
-| `app.js` | The checklist behavior: ticking, progress, search, filters and saving. |
+| `app.js` | The checklist behavior: ticking, progress, search, filters, pages and saving. |
 | `data.js` | The list of entries, one per line. This is the file you edit when the show gets new content. |
 | `logo.png` | The logo shown beside the page title. |
 | `favicon.png` | The small icon in the browser tab. |
@@ -57,6 +60,10 @@ Examples of a line:
 The `k` value is the type: `ep`, `movie`, `ova`, `kaito`, `drama` or `other`.
 
 When the "current" block ends, change it to a fixed range, then add the new movie and a fresh "current" block after it.
+
+## Change how many entries show per page
+
+Open `app.js` and find the line that starts with `var PAGE_SIZES`. It currently reads `[10, 0]`, which means 10 per page or all (0 means all). The first number is the default. To offer more choices, add numbers, for example `[10, 25, 50, 0]`, then commit.
 
 ## Change the look
 
