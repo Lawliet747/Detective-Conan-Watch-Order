@@ -11,7 +11,7 @@ An interactive checklist for the full Detective Conan watch order: 184 entries c
 5. Use the filter buttons to show only Episodes, Movies, OVAs, Magic Kaito, Drama or Specials.
 6. Type in the search box to find a title, or type an episode number to find the block that contains it.
 7. Tap the **⋯** button on any entry to mark everything up to that point as watched, or to clear everything from that point on.
-8. Tick **Hide watched entries** to see only what is left.
+8. Tick **Hide watched entries** to see only what is left. The page remembers this setting the next time you open it on the same device.
 9. The list shows 10 entries per page. Use the arrow buttons under the list to move between pages, or type a page number. The **Per page** menu above the list lets you switch to showing all entries at once.
 
 When you open the site, it jumps to the page that holds the next entry you haven't watched.

@@ -11,6 +11,7 @@
   // The first number is the default.
   var PAGE_SIZES = [10, 0];
   var PS_KEY = 'conan-watch-order-pagesize';
+  var HW_KEY = 'conan-watch-order-hidewatched';
 
   var EP_TOTAL = 0;
   DATA.forEach(function(e){ if(e.k==='ep' && e.b!=null) EP_TOTAL += e.b - e.a + 1; });
@@ -266,16 +267,19 @@
   }
 
   $('search').addEventListener('input',function(ev){ q=ev.target.value.trim().toLowerCase(); page=0; renderList(); });
-  $('hidedone').addEventListener('change',function(ev){ hideDone=ev.target.checked; page=0; renderList(); });
-  function clearFilters(){
-    filter='all'; q=''; hideDone=false; page=0; $('search').value=''; $('hidedone').checked=false; syncChips();
+  function saveHide(){ try{ localStorage.setItem(HW_KEY, hideDone ? '1' : '0'); }catch(e){} }
+  $('hidedone').addEventListener('change',function(ev){ hideDone=ev.target.checked; saveHide(); page=0; renderList(); });
+  // keepHide leaves the "Hide watched entries" setting alone (used by the Next up button)
+  function clearFilters(keepHide){
+    filter='all'; q=''; page=0; $('search').value=''; syncChips();
+    if(!keepHide){ hideDone=false; $('hidedone').checked=false; saveHide(); }
   }
   $('clearfilters').addEventListener('click',function(){ clearFilters(); renderList(); });
 
   $('nextbtn').addEventListener('click',function(){
     var n=nextIndex(); if(n<0) return;
     var pos=vis.indexOf(n);
-    if(pos<0){ clearFilters(); pos=n; }
+    if(pos<0){ clearFilters(true); vis=visibleIndexes(); pos=vis.indexOf(n); }
     page=pageOf(pos);
     renderList();
     var el=rows.get(n); if(!el) return;
@@ -299,7 +303,13 @@
   // boot
   $('eyebrow').textContent='Checklist · '+N+' entries · '+EP_TOTAL.toLocaleString()+'+ episodes';
   // open on the page that holds the next unwatched entry
-  function jumpToNext(){ var n=nextIndex(); page = n>0 ? pageOf(n) : 0; }
+  function jumpToNext(){
+    var n=nextIndex(), pos = n<0 ? -1 : visibleIndexes().indexOf(n);
+    page = pos>0 ? pageOf(pos) : 0;
+  }
+  // bring back the "Hide watched entries" setting from the last visit
+  try{ if(localStorage.getItem(HW_KEY)==='1') hideDone=true; }catch(e){}
+  $('hidedone').checked=hideDone;
   loadLocal(); jumpToNext(); renderList(); updateAll(); setSync('device');
 
   // optional account sync (private per viewer)
@@ -318,7 +328,7 @@
             var same=inc.size===done.size && Array.from(inc).every(function(n){ return done.has(n); });
             if(!dirty && !same){
               done=inc; saveLocal();
-              if(firstSnap && filter==='all' && !q && !hideDone) jumpToNext();
+              if(firstSnap && filter==='all' && !q) jumpToNext();
               renderList(); updateAll();
             }
           }else if(done.size && !dirty && !seeded){
