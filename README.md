@@ -26,11 +26,14 @@ Your progress is saved in your own browser on the device you use. Clearing your 
 | `style.css` | All colors, fonts and layout. Colors and fonts are variables at the top of the page styles. |
 | `app.js` | The checklist behavior: ticking, progress, search, filters, pages and saving. |
 | `data.js` | The list of entries, one per line. This is the file you edit when the show gets new content. |
+| `img/bg-mobile.webp` | Background for phones (1440 × 2560). |
+| `img/bg-tablet.webp` | Background for tablets (2732 × 2732, a square that works in portrait and landscape). |
+| `img/bg-desktop.webp` | Background for laptops and desktops (2560 × 1440). |
 | `logo.png` | The logo shown beside the page title. |
 | `favicon.png` | The small icon in the browser tab. |
 | `apple-touch-icon.png` | The icon used when the page is added to a phone's home screen. |
 
-Keep all of these files together in the same folder. The page needs every one of them.
+Keep all of these files together in the same folder, and keep the three background images inside a folder named `img`. The page needs every one of them.
 
 ## Publish it with GitHub Pages
 
@@ -66,5 +69,9 @@ When the "current" block ends, change it to a fixed range, then add the new movi
 Open `app.js` and find the line that starts with `var PAGE_SIZES`. It currently reads `[10, 0]`, which means 10 per page or all (0 means all). The first number is the default. To offer more choices, add numbers, for example `[10, 25, 50, 0]`, then commit.
 
 ## Change the look
+
+The page picks a background by screen width: phones under 768 pixels, tablets from 768 to 1199, and desktops from 1200 and up. To use a different picture, replace the three files in `img` with new ones that have the same names.
+
+A soft layer in the page colors sits over the background so the text stays readable. To make the picture show through more, open `style.css`, find `--veil-a`, and lower the percentages (they are 92% in light mode and 80% in dark mode).
 
 Open `style.css` and edit the values at the top of the page styles to change colors and fonts. To replace the logo or icons, upload new images with the same file names.
