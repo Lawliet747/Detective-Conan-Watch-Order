@@ -175,53 +175,26 @@ h1{font:800 clamp(30px,8.5vw,46px)/1.02 var(--f-display);letter-spacing:-.02em;m
 .pageof b{color:var(--ink);font-weight:600}
 .pager button:focus-visible,.pageof input:focus-visible,.perpage select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
-/* Responsive Detective Conan background
-   Keep the artwork subtle behind the app UI and switch crops by viewport. */
-body {
-  background-color: var(--bg);
-  background-image:
-    linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--bg) 88%, transparent),
-      color-mix(in srgb, var(--bg) 94%, transparent)
-    ),
-    url("assets/background-mobile.jpg");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-  background-attachment: fixed;
+/* Background art: one image per screen size, kept fixed behind the page.
+   Mobile is 9:16, tablet is square (works in portrait and landscape), desktop is 16:9 with the character on the right. */
+:root{ --veil-a:92%; --veil:color-mix(in srgb,var(--bg) var(--veil-a),transparent) }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --veil-a:80% } }
+:root[data-theme="dark"]{ --veil-a:80% }
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:#132a3a url("img/bg-mobile.webp") 50% 28% / cover no-repeat;
 }
+@media (min-width:768px){ body::before{background-image:url("img/bg-tablet.webp");background-position:50% 45%} }
+@media (min-width:1200px){ body::before{background-image:url("img/bg-desktop.webp");background-position:50% 50%} }
 
-/*Background size for tablet*/
-@media (min-width: 600px) {
-  body {
-    background-image:
-      linear-gradient(
-        to bottom,
-        color-mix(in srgb, var(--bg) 88%, transparent),
-        color-mix(in srgb, var(--bg) 94%, transparent)
-      ),
-      url("assets/background-tablet.jpg");
+/* A soft veil in the page colors keeps the text readable. On wide screens it only covers the column, so the art shows in the margins. */
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--veil)}
+@media (min-width:1000px){
+  body::after{
+    background:linear-gradient(90deg,transparent calc(50% - 520px),var(--veil) calc(50% - 400px),var(--veil) calc(50% + 400px),transparent calc(50% + 520px));
   }
 }
-
-/*Background size for desktop*/
-@media (min-width: 1024px) {
-  body {
-    background-image:
-      linear-gradient(
-        to bottom,
-        color-mix(in srgb, var(--bg) 88%, transparent),
-        color-mix(in srgb, var(--bg) 94%, transparent)
-      ),
-      url("assets/background-desktop.jpg");
-    background-position: center center;
-  }
-}
-
-/* Keep sticky controls readable over the background image. */
-.bar {
-  background: color-mix(in srgb, var(--bg) 94%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+.bar{
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
 }
