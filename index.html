@@ -44,11 +44,28 @@
     <label class="toggle" for="hidedone"><input type="checkbox" id="hidedone"> Hide watched entries</label>
   </section>
 
+  <div class="listhead" id="listhead">
+    <label class="perpage" for="pagesize">Per page <select id="pagesize"></select></label>
+    <span class="range" id="range" aria-live="polite"></span>
+  </div>
+
   <ol class="list" id="list"></ol>
   <div class="empty" id="empty" hidden>
     <div>Nothing matches those filters.</div>
     <button type="button" id="clearfilters">Clear filters</button>
   </div>
+
+  <nav class="pager" id="pager" aria-label="Pagination" hidden>
+    <button type="button" id="pfirst" aria-label="First page" title="First page">«</button>
+    <button type="button" id="pprev" aria-label="Previous page" title="Previous page">‹</button>
+    <span class="pageof">
+      <label for="pgnum">Page</label>
+      <input type="number" id="pgnum" inputmode="numeric" min="1" value="1">
+      <span>of <b id="pgtotal">1</b></span>
+    </span>
+    <button type="button" id="pnext" aria-label="Next page" title="Next page">›</button>
+    <button type="button" id="plast" aria-label="Last page" title="Last page">»</button>
+  </nav>
 
   <footer class="foot">
     <p id="syncnote">Progress is saved on this device.</p>
