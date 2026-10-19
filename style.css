@@ -198,3 +198,8 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
   background:color-mix(in srgb,var(--bg) 88%,transparent);
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
 }
+
+.foot{padding-top:20px;border-top:1px solid var(--line)}
+.foot a{color:var(--ink);text-underline-offset:3px}
+.foot a:hover{color:var(--accent)}
+.foot a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
