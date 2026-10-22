@@ -203,3 +203,6 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .foot a{color:var(--ink);text-underline-offset:3px}
 .foot a:hover{color:var(--accent)}
 .foot a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.foot .disclaimer{font-size:12px;line-height:1.55;max-width:64ch}
+.foot .credit{font-size:12px;line-height:1.4}
